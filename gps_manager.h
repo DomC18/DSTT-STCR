@@ -4,9 +4,9 @@
 #include <cstdint>
 
 struct GPSData {
-  bool validFix;
-  double latitude;
-  double longitude;
+    bool validFix;
+    double latitude;
+    double longitude;
 };
 
 bool initGPS();

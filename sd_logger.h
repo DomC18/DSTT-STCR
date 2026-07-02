@@ -1,10 +1,11 @@
 #ifndef SD_LOGGER_H
 #define SD_LOGGER_H
 
-#include <RTClib.h>
-#include "gps_manager.h"
+#include <SD.h>
+
+#include "pressure_sensor.h"
 
 bool initSDCard();
-void logData(DateTime now, float batteryVoltage, float pressure, GPSData fix);
+bool logData(const PressureData& pressureData);
 
 #endif

@@ -1,55 +1,51 @@
-#include <SPI.h>
-#include <SD.h>
-#include <RTClib.h>
-
 #include "sd_logger.h"
-#include "gps_manager.h"
 #include "config.h"
+
+#include <SPI.h>
+
+static uint32_t sampleNumber = 0;
 
 bool initSDCard() {
     if (!SD.begin(SD_CS)) {
+        Serial.println("SD initialization failed.");
         return false;
     }
+    Serial.println("SD initialized.");
 
     return true;
 }
 
-void logData(DateTime now, float batteryVoltage, float pressure, GPSData fix) {
-    char filename[20];
-    sprintf(filename, "/%04d%02d%02d.csv", now.year(), now.month(), now.day());
+bool logData(const PressureData &pressureData) {
+    const char *filename = "/log.csv";
 
     if (!SD.exists(filename)) {
-        File newFile = SD.open(filename, FILE_WRITE);
-        if (newFile) {
-        newFile.println("date,time,batteryVoltage,pressure,latitude,longitude");
-        newFile.close();
+        File file = SD.open(filename, FILE_WRITE);
+        if (!file) {
+            Serial.println("Failed to create log file.");
+            return false;
         }
+        file.println("Sample,Elapsed_Time_s,Pressure_bar,Temperature_C,Depth_m");
+        file.close();
+    }
+    File file = SD.open(filename, FILE_APPEND);
+    if (!file) {
+        Serial.println("Failed to open log file.");
+        return false;
     }
 
-    char dateString[16];
-    char timeString[16];
-    sprintf(dateString, "%04d-%02d-%02d", now.year(), now.month(), now.day());
-    sprintf(timeString, "%02d:%02d:%02d", now.hour(), now.minute(), now.second());
+    sampleNumber++;
+    uint32_t elapsedTime = (sampleNumber - 1) * LOG_INTERVAL_SECONDS;
+    file.print(sampleNumber);
+    file.print(",");
+    file.print(elapsedTime);
+    file.print(",");
+    file.print(pressureData.pressureBar, 3);
+    file.print(",");
+    file.print(pressureData.temperatureC, 2);
+    file.print(",");
+    file.println(pressureData.depthM, 3);
+    file.close();
+    Serial.println("Data logged.");
 
-    File logFile = SD.open(filename, FILE_APPEND);
-    if (logFile) {
-        logFile.print(dateString);
-        logFile.print(",");
-        logFile.print(timeString);
-        logFile.print(",");
-        logFile.print(batteryVoltage);
-        logFile.print(",");
-        logFile.print(pressure);
-        logFile.print(",");
-        if (fix.validFix) {
-        logFile.print(fix.latitude, 6);
-        logFile.print(",");
-        logFile.println(fix.longitude, 6);
-        } else {
-        logFile.print("-----");
-        logFile.print(",");
-        logFile.println("-----");
-        }
-        logFile.close();
-    }
+    return true;
 }

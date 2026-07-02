@@ -1,26 +1,68 @@
-#include <test.h>
-#include <config.h>
-#include <rtc_manager.h>
-#include <sd_logger.h>
-#include <power_manager.h>
-#include <battery_monitor.h>
-#include <pressure_sensor.h>
-#include <gps_manager.h>
+#include <Wire.h>
+#include <SPI.h>
+
+#include "config.h"
+#include "power_manager.h"
+#include "pressure_sensor.h"
+#include "sd_logger.h"
+#include "timer.h"
 
 void setup() {
-    Serial.begin(19200);
+    Serial.begin(115200);
     delay(1000);
-    
-    Serial.println("Entering deep sleep...");
+
+    Serial.println();
+    Serial.println("=================================");
+    Serial.println("Sea Turtle Data Logger - Phase 1");
+    Serial.println("=================================");
+    // initLowPowerMode();
+    // printWakeupReason();
+
+    // Wire.begin(I2C_SDA, I2C_SCL);
+    // SPI.begin(
+    //     SPI_SCK,
+    //     SPI_MISO,
+    //     SPI_MOSI,
+    //     SD_CS
+    // );
+
+    // if (!initSDCard()) {
+    //     Serial.println("SD initialization failed.");
+    //     while (true) {
+    //         delay(1000);
+    //     }
+    // }
+    // if (!initPressureSensor()) {
+    //     Serial.println("Pressure sensor initialization failed.");
+    //     while (true) {
+    //         delay(1000);
+    //     }
+    // }
+    // PressureData pressureData;
+    // if (!readSensor(pressureData)) {
+    //     Serial.println("Sensor read failed.");
+    //     while (true) {
+    //         delay(1000);
+    //     }
+    // }
+
+    // Serial.println();
+    // Serial.println("Current Reading");
+    // Serial.print("Pressure (bar): ");
+    // Serial.println(pressureData.pressureBar, 3);
+    // Serial.print("Temperature (C): ");
+    // Serial.println(pressureData.temperatureC, 2);
+    // Serial.print("Depth (m): ");
+    // Serial.println(pressureData.depthM, 3);
+
+    // if (!logData(currentTime, pressureData)) {
+    //     Serial.println("Logging failed.");
+    // }
+
+    setWakeTimer(LOG_INTERVAL_SECONDS)
+    Serial.println("Cycle complete.");
+    delay(1000);
     enterDeepSleep();
-    Serial.println("Out of deep sleep.");
-    float voltage = batteryVoltage();
-    float pressure = readPressurePSI();
-    GPSData fix = getGPSFix(1000);
-    DateTime now = DateTime(2026, 6, 3, 23, 0, 0);
-    logData(now, voltage, pressure, fix);
 }
 
-void loop() {
-    
-}
+void loop() {}

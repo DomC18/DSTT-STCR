@@ -1,7 +1,14 @@
 #ifndef PRESSURE_SENSOR_H
 #define PRESSURE_SENSOR_H
 
+struct PressureData {
+    float pressureBar;
+    float temperatureC;
+    float depthM;
+}
+
 bool initPressureSensor();
-float readPressurePSI();
+bool readSensor(PressureData& pressureData);
+float calculateDepth(float pressureBar);
 
 #endif

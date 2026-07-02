@@ -1,24 +1,40 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#define I2C_SDA                6
-#define I2C_SCL                7
+//==================================================
+// I2C Bus
+//==================================================
 
-#define SPI_SCK                4
-#define SPI_MISO               2
-#define SPI_MOSI               3
+#define I2C_SDA                8
+#define I2C_SCL                9
 
-#define SD_CS                  5
+//==================================================
+// SPI Bus
+//==================================================
 
-#define ADS1220_CS             9
-#define ADS1220_DRDY           10
+#define SPI_SCK                10
+#define SPI_MOSI               11
+#define SPI_MISO               12
+#define SD_CS                  22
 
-#define RTC_WAKE_PIN           GPIO_NUM_0
+//==================================================
+// Keller Sensor
+//==================================================
 
-#define SENSOR_MIN_V           0.5f
-#define SENSOR_MAX_V           2.5f
-#define SENSOR_MAX_PSI         100.0f
+#define KELLER_I2C_ADDRESS     0x40
 
-#define ADC_REFERENCE          2.048f
+//==================================================
+// Environmental Constants
+//==================================================
+
+#define ATM_PRESSURE_BAR       1.01325f
+#define WATER_DENSITY          997.0f
+#define GRAVITY                9.80665f
+
+//==================================================
+// Logging
+//==================================================
+
+#define LOG_INTERVAL_SECONDS   30
 
 #endif

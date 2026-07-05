@@ -26,6 +26,12 @@ void setup() {
     //     SD_CS
     // );
 
+    // if (!initTemperatureSensor()) {
+    //     Serial.println("Temperature sensor initialization failed.");
+    //     while (true) {
+    //         delay(1000);
+    //     }
+    // }
     // if (!initSDCard()) {
     //     Serial.println("SD initialization failed.");
     //     while (true) {
@@ -44,6 +50,12 @@ void setup() {
     //     while (true) {
     //         delay(1000);
     //     }
+    // }
+    // float temperature;
+    // if (readTemperature(temperature)) {
+    //     Serial.print("Water Temperature: ");
+    //     Serial.print(waterTemperature);
+    //     Serial.println(" C");
     // }
 
     // Serial.println();

@@ -9,6 +9,5 @@ struct PressureData {
 
 bool initPressureSensor();
 bool readSensor(PressureData& pressureData);
-float calculateDepth(float pressureBar);
 
 #endif

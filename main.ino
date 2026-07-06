@@ -16,7 +16,7 @@ void setup() {
     Serial.println("Sea Turtle Data Logger - Phase 1");
     Serial.println("=================================");
     // initLowPowerMode();
-    // printWakeupReason();
+    // printWakeupReason(); 
 
     // Wire.begin(I2C_SDA, I2C_SCL);
     // SPI.begin(

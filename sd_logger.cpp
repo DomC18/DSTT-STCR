@@ -1,6 +1,7 @@
 #include "sd_logger.h"
 #include "config.h"
 
+#include <Arduino.h>
 #include <SPI.h>
 
 static uint32_t sampleNumber = 0;

@@ -71,7 +71,7 @@ void setup() {
     //     Serial.println("Logging failed.");
     // }
 
-    setWakeTimer(LOG_INTERVAL_SECONDS)
+    setWakeTimer(LOG_INTERVAL_SECONDS);
     Serial.println("Cycle complete.");
     delay(1000);
     enterDeepSleep();

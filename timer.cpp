@@ -1,5 +1,5 @@
+#include <Arduino.h>
 #include <esp_sleep.h>
-
 #include "timer.h"
 
 void setWakeTimer(uint32_t seconds) {

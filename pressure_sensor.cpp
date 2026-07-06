@@ -1,6 +1,7 @@
 #include "pressure_sensor.h"
 #include "config.h"
 
+#include <Arduino.h>
 #include <Wire.h>
 
 static float pressureMin = 0.0f;
@@ -46,7 +47,7 @@ static float calculateDepth(float pressureBar) {
 
 
 bool initPressureSensor() {
-    Wire.begin(I2C_SDA_PIN, I2C_SCL_PIN);
+    Wire.begin(I2C_SDA, I2C_SCL);
 
     if (!readCalibration()) {
         Serial.println("Failed to read Pressure calibration.");

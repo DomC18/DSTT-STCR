@@ -5,7 +5,7 @@ struct PressureData {
     float pressureBar;
     float temperatureC;
     float depthM;
-}
+};
 
 bool initPressureSensor();
 bool readSensor(PressureData& pressureData);

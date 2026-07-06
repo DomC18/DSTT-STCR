@@ -21,7 +21,8 @@
 // Temperature Sensor
 //==================================================
 
-#define DS18B20_PIN            13
+#define DS18B20_IN             13
+#define DS18B20_OUT            14
 
 //==================================================
 // Pressure Sensor

@@ -5,13 +5,13 @@
 #include "power_manager.h"
 #include "pressure_sensor.h"
 #include "sd_logger.h"
+#include "temperature_sensor.h"
 #include "timer.h"
 
 void setup() {
-    Serial.begin(115200);
+    Serial.begin(19200);
     delay(1000);
 
-    Serial.println();
     Serial.println("=================================");
     Serial.println("Sea Turtle Data Logger - Phase 1");
     Serial.println("=================================");
@@ -26,12 +26,12 @@ void setup() {
     //     SD_CS
     // );
 
-    // if (!initTemperatureSensor()) {
-    //     Serial.println("Temperature sensor initialization failed.");
-    //     while (true) {
-    //         delay(1000);
-    //     }
-    // }
+    if (!initTemperatureSensor()) {
+        Serial.println("Temperature sensor initialization failed.");
+        while (true) {
+            delay(1000);
+        }
+    }
     // if (!initSDCard()) {
     //     Serial.println("SD initialization failed.");
     //     while (true) {
@@ -51,12 +51,12 @@ void setup() {
     //         delay(1000);
     //     }
     // }
-    // float temperature;
-    // if (readTemperature(temperature)) {
-    //     Serial.print("Water Temperature: ");
-    //     Serial.print(waterTemperature);
-    //     Serial.println(" C");
-    // }
+    float temperature;
+    if (readTemperature(temperature)) {
+        Serial.print("Temperature: ");
+        Serial.print(temperature);
+        Serial.println(" C");
+    }
 
     // Serial.println();
     // Serial.println("Current Reading");
@@ -71,10 +71,18 @@ void setup() {
     //     Serial.println("Logging failed.");
     // }
 
-    setWakeTimer(LOG_INTERVAL_SECONDS);
-    Serial.println("Cycle complete.");
-    delay(1000);
-    enterDeepSleep();
+    // setWakeTimer(LOG_INTERVAL_SECONDS);
+    // Serial.println("Cycle complete.");
+    // delay(1000);
+    // enterDeepSleep();
 }
 
-void loop() {}
+void loop() {
+    float temperature;
+    if (readTemperature(temperature)) {
+        Serial.print("Temperature: ");
+        Serial.print(temperature);
+        Serial.println(" C");
+    }
+    delay(1000);
+}

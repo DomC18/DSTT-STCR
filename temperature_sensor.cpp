@@ -1,37 +1,24 @@
 #include "temperature_sensor.h"
 #include "config.h"
 
-#include <Arduino.h>
-#include <OneWire.h>
-#include <DallasTemperature.h>
+#include <DS18B20.h>
 
-static OneWire oneWireIn(DS18B20_IN);
-static OneWire oneWireOut(DS18B20_OUT);
-static DallasTemperature sensorIn(&oneWireIn);
-static DallasTemperature sensorOut(&oneWireOut);
+static DS18B20 ds(DS18B20_PIN);
+static bool sensorFound = false;
 
 bool initTemperatureSensor() {
-    sensorIn.begin();
-    sensorOut.begin();
-
-    if (sensors.getDeviceCount() == 0) {
-        Serial.println("No DS18B20 detected.");
-        return false;
+    Serial.println("Starting DS18B20 test");
+    if (ds.selectNext()) {
+        Serial.println("Sensor found");
+        sensorFound = true;
     }
 
-    return true;
+    return sensorFound;
 }
 
 bool readTemperature(float &temperatureC) {
-    sensorIn.requestTemperatures();
-    sensorOut.requestTemperatures();
-    temperatureC = sensorIn.getTempCByIndex(0);
-    temperatureOut = sensorOut.getTempCByIndex(0);
-
-    if (temperatureC == DEVICE_DISCONNECTED_C) {
-        Serial.println("Temperature sensor disconnected.");
-        return false;
-    }
+    if (!sensorFound) return false;
+    temperatureC = ds.getTempC();
 
     return true;
 }

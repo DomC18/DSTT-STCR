@@ -1,11 +1,10 @@
 #include "power_manager.h"
 #include "config.h"
 
-#include "esp_sleep.h"
 #include <Arduino.h>
+#include "esp_sleep.h"
 
 void initLowPowerMode() {
-    // btStop();
     Serial.println("Low-power mode initialized.");
 }
 

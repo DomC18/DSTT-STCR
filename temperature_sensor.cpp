@@ -1,6 +1,7 @@
 #include "temperature_sensor.h"
 #include "config.h"
 
+#include <Arduino.h>
 #include <DS18B20.h>
 
 static DS18B20 ds(DS18B20_PIN);

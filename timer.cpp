@@ -1,6 +1,7 @@
+#include "timer.h"
+
 #include <Arduino.h>
 #include <esp_sleep.h>
-#include "timer.h"
 
 void setWakeTimer(uint32_t seconds) {
     uint64_t wakeTimeUS = (uint64_t)seconds * 1000000ULL;

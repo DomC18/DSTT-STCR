@@ -1,13 +1,9 @@
+#include <Arduino.h>
+#include <Wire.h>
 #include "pressure_sensor.h"
 #include "config.h"
 
-#include <Arduino.h>
-#include <Wire.h>
-
-static float pressureMin = 0.0f;
-static float pressureMax = 10.0f;
-
-static bool readMemoryFloat(uint8_t address, float &value) {
+bool readMemoryFloat(uint8_t address, float &value) {
     Wire.beginTransmission(PRESSURE_ADDRESS);
     Wire.write(0x69);
     Wire.write(address);
@@ -30,48 +26,37 @@ static bool readMemoryFloat(uint8_t address, float &value) {
     return true;
 }
 
-static bool readCalibration() {
+bool readCalibration() {
     if (!readMemoryFloat(0x13, pressureMin)) return false;
     if (!readMemoryFloat(0x15, pressureMax)) return false;
-
+    
     return true;
 }
-
-static float calculateDepth(float pressureBar) {
-    float pressurePa = (pressureBar - ATM_PRESSURE_BAR) * 100000.0f;
-    if (pressurePa < 0) pressurePa = 0;
-
-    return pressurePa / (WATER_DENSITY * GRAVITY);
-}
-
-
 
 bool initPressureSensor() {
     Wire.begin(I2C_SDA, I2C_SCL);
-
     if (!readCalibration()) {
-        Serial.println("Failed to read Pressure calibration.");
         return false;
     }
-
-    Serial.println("Pressure sensor initialized.");
-    Serial.print("Pressure Range: ");
-    Serial.print(pressureMin);
-    Serial.print(" to ");
-    Serial.print(pressureMax);
-    Serial.println(" bar");
-
+    
     return true;
+}
+
+float calculateDepth(PressureData &pressureData) {
+    float pressurePa = (pressureData.pressureBar - ATM_PRESSURE_BAR) * 100000.0f;
+    if (pressurePa < 0) pressurePa = 0;
+    
+    return pressurePa / (WATER_DENSITY * GRAVITY);
 }
 
 bool readPressureData(PressureData &pressureData) {
     Wire.beginTransmission(PRESSURE_ADDRESS);
     Wire.write(0xAC);
-
+    
     if (Wire.endTransmission() != 0) return false;
     delay(8);
     if (Wire.requestFrom(PRESSURE_ADDRESS, (uint8_t)5) != 5) return false;
-
+    
     uint8_t status = Wire.read();
     uint16_t pressureRaw = (Wire.read() << 8) | Wire.read();
     uint16_t temperatureRaw = (Wire.read() << 8) | Wire.read();
@@ -86,4 +71,15 @@ bool readPressureData(PressureData &pressureData) {
     pressureData.depthM = calculateDepth(pressureData.pressureBar);
 
     return true;
+}
+
+void printPressureData(PressureData &pressureData) {
+    Serial.println();
+    Serial.println("Current Reading");
+    Serial.print("Pressure (bar): ");
+    Serial.println(pressureData.pressureBar, 3);
+    Serial.print("Temperature (C): ");
+    Serial.println(pressureData.temperatureC, 2);
+    Serial.print("Depth (m): ");
+    Serial.println(pressureData.depthM, 3);
 }

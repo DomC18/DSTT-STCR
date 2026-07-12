@@ -3,6 +3,7 @@
 
 #include <cstdint>
 
+void enterDeepSleep();
 void setWakeTimer(uint32_t seconds = 3600);
 void printWakeupReason();
 

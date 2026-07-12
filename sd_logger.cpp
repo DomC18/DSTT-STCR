@@ -1,17 +1,15 @@
-#include "sd_logger.h"
-#include "config.h"
-
 #include <Arduino.h>
 #include <SPI.h>
+#include <SD.h>
+#include "sd_logger.h"
+#include "config.h"
 
 static uint32_t sampleNumber = 0;
 
 bool initSDCard() {
-    if (!SD.begin(SD_CS)) {
-        Serial.println("SD initialization failed.");
+    if (!SPI.begin(SPI_SCK, SPI_MISO, SPI_MOSI, SD_CS)) {
         return false;
     }
-    Serial.println("SD initialized.");
 
     return true;
 }

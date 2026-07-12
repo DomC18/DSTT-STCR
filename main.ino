@@ -1,88 +1,47 @@
+#include <Arduino.h>
 #include <Wire.h>
 #include <SPI.h>
-
 #include "config.h"
-#include "power_manager.h"
 #include "pressure_sensor.h"
 #include "sd_logger.h"
 #include "temperature_sensor.h"
 #include "timer.h"
 
 void setup() {
-    Serial.begin(19200);
-    delay(1000);
+    Serial.begin(BAUD_RATE);
+    delay(DEFAULT_DELAY);
+    printWakeupReason(); 
 
-    Serial.println("=================================");
-    Serial.println("Sea Turtle Data Logger - Phase 1");
-    Serial.println("=================================");
-    // initLowPowerMode();
-    // printWakeupReason(); 
-
-    // Wire.begin(I2C_SDA, I2C_SCL);
-    // SPI.begin(
-    //     SPI_SCK,
-    //     SPI_MISO,
-    //     SPI_MOSI,
-    //     SD_CS
-    // );
-
-    if (!initTemperatureSensor()) {
-        Serial.println("Temperature sensor initialization failed.");
+    if (!initSDCard()) {
+        Serial.println("SD initialization failed.");
         while (true) {
-            delay(1000);
+            delay(DEFAULT_DELAY);
         }
     }
-    // if (!initSDCard()) {
-    //     Serial.println("SD initialization failed.");
-    //     while (true) {
-    //         delay(1000);
-    //     }
-    // }
     // if (!initPressureSensor()) {
     //     Serial.println("Pressure sensor initialization failed.");
     //     while (true) {
-    //         delay(1000);
+    //         delay(DEFAULT_DELAY);
     //     }
     // }
     // PressureData pressureData;
     // if (!readSensor(pressureData)) {
     //     Serial.println("Sensor read failed.");
     //     while (true) {
-    //         delay(1000);
+    //         delay(DEFAULT_DELAY);
     //     }
     // }
-    float temperature;
-    if (readTemperature(temperature)) {
-        Serial.print("Temperature: ");
-        Serial.print(temperature);
-        Serial.println(" C");
-    }
-
-    // Serial.println();
-    // Serial.println("Current Reading");
-    // Serial.print("Pressure (bar): ");
-    // Serial.println(pressureData.pressureBar, 3);
-    // Serial.print("Temperature (C): ");
-    // Serial.println(pressureData.temperatureC, 2);
-    // Serial.print("Depth (m): ");
-    // Serial.println(pressureData.depthM, 3);
-
-    // if (!logData(currentTime, pressureData)) {
+    // printPressureData(pressureData);
+    // if (!logData(pressureData)) {
     //     Serial.println("Logging failed.");
     // }
 
-    // setWakeTimer(LOG_INTERVAL_SECONDS);
     // Serial.println("Cycle complete.");
-    // delay(1000);
+    // setWakeTimer(LOG_INTERVAL_SECONDS);
+    // delay(DEFAULT_DELAY);
     // enterDeepSleep();
 }
 
 void loop() {
-    float temperature;
-    if (readTemperature(temperature)) {
-        Serial.print("Temperature: ");
-        Serial.print(temperature);
-        Serial.println(" C");
-    }
-    delay(1000);
+
 }

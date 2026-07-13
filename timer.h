@@ -4,7 +4,7 @@
 #include <cstdint>
 
 void enterDeepSleep();
-void setWakeTimer(uint32_t seconds = 3600);
+void setWakeTimer(bool isSurfaced);
 void printWakeupReason();
 
 #endif

@@ -23,7 +23,7 @@ bool logData(const PressureData &pressureData) {
             Serial.println("Failed to create log file.");
             return false;
         }
-        file.println("Sample,Elapsed_Time_s,Pressure_bar,Temperature_C,Depth_m");
+        file.println("Sample,Elapsed_Time_s,Pressure_bar,Temperature_C,Depth_m,Submerged");
         file.close();
     }
     File file = SD.open(filename, FILE_APPEND);
@@ -42,7 +42,9 @@ bool logData(const PressureData &pressureData) {
     file.print(",");
     file.print(pressureData.temperatureC, 2);
     file.print(",");
-    file.println(pressureData.depthM, 3);
+    file.print(pressureData.depthM, 3);
+    file.print(",");
+    file.println(pressureData.submerged ? "Yes" : "No");
     file.close();
     Serial.println("Data logged.");
 

@@ -32,6 +32,17 @@
 #define PRESSURE_MAX            10.0f
 
 //==================================================
+// State Manager
+//==================================================
+
+#define DRY_COUNT_THRESHOLD      3
+#define DRY_THRESHOLD_MARGIN     0.05f
+#define WET_THRESHOLD_MARGIN     0.10f
+#define SURFACE_WINDOW_SECONDS   60
+#define SUBMERGED_INTERVAL_SEC   3600
+#define SURFACED_INTERVAL_SEC    1
+
+//==================================================
 // Environmental Constants
 //==================================================
 
@@ -44,6 +55,8 @@
 //==================================================
 
 #define LOG_INTERVAL_SECONDS    30
+#define SURFACED_INTERVAL_SEC   60
+#define SUBMERGED_INTERVAL_SEC  3600
 #define UNIX_TIME               1000000ULL
 
 #endif

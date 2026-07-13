@@ -6,8 +6,8 @@ void enterDeepSleep() {
     esp_deep_sleep_start();
 }
 
-void setWakeTimer(uint32_t seconds) {
-    uint64_t wakeTimeUS = (uint64_t)seconds * UNIX_TIME;
+void setWakeTimer(bool isSurfaced) {
+    uint64_t wakeTimeUS = isSurfaced ? SURFACED_INTERVAL_SEC * UNIX_TIME : SUBMERGED_INTERVAL_SEC * UNIX_TIME;
     esp_sleep_enable_timer_wakeup(wakeTimeUS);
     Serial.print("Wake timer set for ");
     Serial.print(seconds);

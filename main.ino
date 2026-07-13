@@ -7,11 +7,8 @@
 #include "temperature_sensor.h"
 #include "timer.h"
 
-void setup() {
-    Serial.begin(BAUD_RATE);
-    delay(DEFAULT_DELAY);
-    printWakeupReason(); 
 
+void init() {
     if (!initSDCard()) {
         Serial.println("SD initialization failed.");
         while (true) {
@@ -24,6 +21,14 @@ void setup() {
     //         delay(DEFAULT_DELAY);
     //     }
     // }
+}
+
+void setup() {
+    Serial.begin(BAUD_RATE);
+    delay(DEFAULT_DELAY);
+    printWakeupReason(); 
+    init();
+    
     // PressureData pressureData;
     // if (!readSensor(pressureData)) {
     //     Serial.println("Sensor read failed.");
@@ -35,9 +40,10 @@ void setup() {
     // if (!logData(pressureData)) {
     //     Serial.println("Logging failed.");
     // }
+    // updateState(pressureData);
 
     // Serial.println("Cycle complete.");
-    // setWakeTimer(LOG_INTERVAL_SECONDS);
+    // setWakeTimer(isSurfaced());
     // delay(DEFAULT_DELAY);
     // enterDeepSleep();
 }

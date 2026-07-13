@@ -7,6 +7,7 @@ struct PressureData {
     float pressureBar;
     float temperatureC;
     float depthM;
+    bool submerged;
 };
 
 bool readMemoryFloat(uint8_t address, float &value);

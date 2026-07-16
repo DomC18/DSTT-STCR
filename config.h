@@ -28,8 +28,8 @@
 //==================================================
 
 #define PRESSURE_ADDRESS        0x40
-#define PRESSURE_MIN            0.0f
-#define PRESSURE_MAX            10.0f
+#define I2C_SDA                 7
+#define I2C_SCL                 8
 
 //==================================================
 // State Manager

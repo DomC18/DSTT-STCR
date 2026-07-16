@@ -16,7 +16,7 @@ TagState getCurrentState() {
 }
 
 void updateState(const PressureData& pressureData) {
-    if (pressureData.pressure < dryBaseline) {
+    if (pressureData.pressureBar < dryBaseline) {
         surfacedSamples++;
         if (surfacedSamples >= 5) {
             currentState = SURFACED;

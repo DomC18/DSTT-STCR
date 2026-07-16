@@ -10,11 +10,12 @@ struct PressureData {
     bool submerged;
 };
 
-bool readMemoryFloat(uint8_t address, float &value);
+bool readMemoryWord(uint8_t address, uint16_t &value);
+bool readMemoryFloat(uint8_t addressMSB, float &value);
 bool readCalibration();
 bool initPressureSensor();
 float calculateDepth(PressureData &pressureData);
-bool readSensor(PressureData &pressureData);
+bool readPressure(PressureData &pressureData);
 void printPressureData(PressureData &pressureData);
 
 #endif

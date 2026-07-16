@@ -1,16 +1,13 @@
 #include <Arduino.h>
 #include <esp_sleep.h>
 #include "timer.h"
-
-void enterDeepSleep() {
-    esp_deep_sleep_start();
-}
+#include "config.h"
 
 void setWakeTimer(bool isSurfaced) {
     uint64_t wakeTimeUS = isSurfaced ? SURFACED_INTERVAL_SEC * UNIX_TIME : SUBMERGED_INTERVAL_SEC * UNIX_TIME;
     esp_sleep_enable_timer_wakeup(wakeTimeUS);
     Serial.print("Wake timer set for ");
-    Serial.print(seconds);
+    Serial.print(wakeTimeUS);
     Serial.println(" seconds.");
 }
 

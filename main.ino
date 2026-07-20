@@ -1,26 +1,25 @@
 #include <Arduino.h>
 #include <Wire.h>
+#include <SD.h>
 #include <SPI.h>
 #include <esp_sleep.h>
 #include "config.h"
 #include "pressure_sensor.h"
 #include "sd_logger.h"
+#include "state_manager.h"
 #include "temperature_sensor.h"
 #include "timer.h"
 
+PressureData pressureData;
 
-void init() {
-    if (!initSDCard()) {
-        Serial.println("SD initialization failed.");
-        while (true) {
-            delay(DEFAULT_DELAY);
-        }
-    }
+bool initSys() {
+    // if (!initSDCard()) {
+    //     Serial.println("SD initialization failed.");
+    //     return false;
+    // }
     if (!initPressureSensor()) {
         Serial.println("Pressure sensor initialization failed.");
-        while (true) {
-            delay(DEFAULT_DELAY);
-        }
+        return false;
     }
 }
 
@@ -28,9 +27,11 @@ void setup() {
     Serial.begin(BAUD_RATE);
     delay(DEFAULT_DELAY);
     printWakeupReason(); 
-    init();
+    if (!initSys()) {
+        Serial.println("Init unsucessful.");
+        return;
+    }
     
-    PressureData pressureData;
     if (!readPressure(pressureData)) {
         Serial.println("Sensor read failed.");
         while (true) {
@@ -38,6 +39,7 @@ void setup() {
         }
     }
     printPressureData(pressureData);
+    
     // if (!logData(pressureData)) {
     //     Serial.println("Logging failed.");
     // }
@@ -50,5 +52,11 @@ void setup() {
 }
 
 void loop() {
-
+    if (!readPressure(pressureData)) {
+        Serial.println("Sensor read failed.");
+        while (true) {
+            delay(DEFAULT_DELAY);
+        }
+    }
+    printPressureData(pressureData);
 }

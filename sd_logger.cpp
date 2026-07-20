@@ -7,7 +7,9 @@
 static uint32_t sampleNumber = 0;
 
 bool initSDCard() {
-    if (!SPI.begin(SPI_SCK, SPI_MISO, SPI_MOSI, SD_CS)) {
+    bool result = SPI.begin(SPI_SCK, SPI_MISO, SPI_MOSI);
+    Serial.println(result);
+    if (!SD.begin(SD_CS, SPI)) {
         return false;
     }
 

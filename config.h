@@ -12,10 +12,10 @@
 // SD Card
 //==================================================
 
-#define SPI_SCK                 8
-#define SPI_MOSI                10
-#define SPI_MISO                9
-#define SD_CS                   2
+#define SPI_SCK                 D8
+#define SPI_MISO                D4
+#define SPI_MOSI                D10
+#define SD_CS                   D0
 
 //==================================================
 // Temperature Sensor
@@ -29,7 +29,7 @@
 
 #define PRESSURE_ADDRESS        0x40
 #define I2C_SDA                 7
-#define I2C_SCL                 8
+#define I2C_SCL                 3
 
 //==================================================
 // State Manager
@@ -48,6 +48,7 @@
 
 #define ATM_PRESSURE_BAR        1.01325f
 #define WATER_DENSITY           997.0f
+#define SEAWATER_DENSITY        1025.0f
 #define GRAVITY                 9.80665f
 
 //==================================================

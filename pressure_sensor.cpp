@@ -139,7 +139,7 @@ float calculateDepth(PressureData &pressureData) {
     float pressurePa = (pressureData.pressureBar - ATM_PRESSURE_BAR) * 100000.0f;
     if (pressurePa < 0) pressurePa = 0;
     
-    return pressurePa / (WATER_DENSITY * GRAVITY);
+    return pressurePa / (SEAWATER_DENSITY * GRAVITY);
 }
 
 /*
@@ -170,6 +170,8 @@ bool readPressure(PressureData &pressureData) {
     uint8_t status = Wire.read();
     uint16_t pressureRaw = (Wire.read() << 8) | Wire.read();
     uint16_t temperatureRaw = (Wire.read() << 8) | Wire.read();
+    pressureData.pressureRaw = pressureRaw;
+    pressureData.temperatureRaw = temperatureRaw;
 
     if (status != 0) {
         Serial.println("Pressure conversion failed.");
@@ -189,8 +191,12 @@ bool readPressure(PressureData &pressureData) {
 void printPressureData(PressureData &pressureData) {
     Serial.println();
     Serial.println("Current Reading");
+    Serial.print("Pressure (raw): ");
+    Serial.println(pressureData.pressureRaw, 3);
     Serial.print("Pressure (bar): ");
     Serial.println(pressureData.pressureBar, 3);
+    Serial.print("Pressure (raw): ");
+    Serial.println(pressureData.temperatureRaw, 3);
     Serial.print("Temperature (C): ");
     Serial.println(pressureData.temperatureC, 2);
     Serial.print("Depth (m): ");

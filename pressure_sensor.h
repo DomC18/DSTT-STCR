@@ -4,7 +4,9 @@
 #include <cstdint>
 
 struct PressureData {
+    float pressureRaw;
     float pressureBar;
+    float temperatureRaw;
     float temperatureC;
     float depthM;
     bool submerged;

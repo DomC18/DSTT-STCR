@@ -12,9 +12,9 @@ void setWakeTimer(bool isSurfaced) {
 }
 
 void printWakeupReason() {
-    Serial.println("=================================");
-    Serial.println("Sea Turtle Data Logger - Phase 1");
-    Serial.println("=================================");
+    Serial.println("======================");
+    Serial.println("Sea Turtle Data Logger");
+    Serial.println("======================");
 
     esp_sleep_wakeup_cause_t reason = esp_sleep_get_wakeup_cause();
     switch (reason) {
@@ -39,4 +39,6 @@ void printWakeupReason() {
             Serial.println(reason);
             break;
     }
+
+    Serial.println();
 }

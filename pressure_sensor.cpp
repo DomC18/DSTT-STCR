@@ -32,12 +32,35 @@ bool readMemoryWord(uint8_t address, uint16_t &value) {
 
     // Send Request: STATUS, MEM_MSB, MEM_LSB
     // Directly from docs
-    if (Wire.endTransmission() != 0) return false;
-    delayMicroseconds(600);
-    if (Wire.requestFrom(PRESSURE_ADDRESS, (uint8_t)3) != 3) return false;
+    if (Wire.endTransmission() != 0) {
+        Serial.println("error in transmission of memory");
+        return false;
+    }
+    delay(1);
+    if (Wire.requestFrom(PRESSURE_ADDRESS, (uint8_t)3) != 3) {
+        Serial.println("error in request of memory");
+        return false;
+    }
 
     uint8_t status = Wire.read();
-    if (status != 0) return false;
+    bool busy = status & 0x80;
+    uint8_t mode = (status >> 5) & 0x03;
+    bool memError = status & 0x08;
+
+    // Serial.printf("STATUS = 0x%02X\n", status);
+    // Serial.printf("Busy = %d\n", busy);
+    // Serial.printf("Mode = %d\n", mode);
+    // Serial.printf("Memory Error = %d\n", memError);
+
+    if (busy) {
+        Serial.println("Sensor busy");
+        return false;
+    }
+
+    if (memError) {
+        Serial.println("Memory checksum error");
+        return false;
+    }
 
     // Reconstruct the 16-bit memory value.
     value = ((uint16_t)Wire.read() << 8) | Wire.read();
@@ -71,8 +94,14 @@ bool readMemoryFloat(uint8_t addressMSB, float &value) {
     uint16_t lowWord;
 
     // Read upper, then lower half
-    if (!readMemoryWord(addressMSB, highWord)) return false;
-    if (!readMemoryWord(addressMSB + 1, lowWord)) return false;
+    if (!readMemoryWord(addressMSB, highWord)) {
+        Serial.println("error reading high word");
+        return false;
+    }
+    if (!readMemoryWord(addressMSB + 1, lowWord)) {
+        Serial.println("error reading low word");
+        return false;
+    }
 
     // Reinterpret the raw 32-bit value as a float.
     union {
@@ -102,6 +131,9 @@ bool readCalibration() {
     // 0x15-0x16: Pmax
     if (!readMemoryFloat(0x13, PRESSURE_MIN)) return false;
     if (!readMemoryFloat(0x15, PRESSURE_MAX)) return false;
+    Serial.println(PRESSURE_MIN);
+    Serial.println(PRESSURE_MAX);
+    Serial.println();
     
     return true;
 }
@@ -112,14 +144,27 @@ bool readCalibration() {
     *
     * This should be called once in setup().
 */
-bool initPressureSensor() {
-    Wire.begin(I2C_SDA, I2C_SCL);
-    if (!readCalibration()) {
-        return false;
-    }
-    
-    return true;
+bool initPressureSensor() { 
+    Wire.begin(I2C_SDA, I2C_SCL); 
+    Wire.setClock(50000);
+
+    if (!readCalibration()) { 
+        Serial.println("error reading calibration"); 
+        return false; 
+    } 
+
+    return true; 
 }
+
+// void pressureOn() {
+//     digitalWrite(PRESSURE_POWER, HIGH);
+//     delay(50);
+// }
+
+// void pressureOff() {
+//     digitalWrite(PRESSURE_POWER, LOW);
+//     delay(50);
+// }
 
 /*
     * Converts pressure into water depth.
@@ -151,9 +196,8 @@ float calculateDepth(PressureData &pressureData) {
     *   depthM
 */
 bool readPressure(PressureData &pressureData) {
-    // 0xAC = Start Conversion command
     Wire.beginTransmission(PRESSURE_ADDRESS);
-    Wire.write(0xAC);
+    Wire.write(PRESSURE_REQUEST);
     
     /*
         * Read 5-byte response.
@@ -163,20 +207,31 @@ bool readPressure(PressureData &pressureData) {
         * Byte 3 = Temperature MSB
         * Byte 4 = Temperature LSB
     */
-    if (Wire.endTransmission() != 0) return false;
-    delay(9);
-    if (Wire.requestFrom(PRESSURE_ADDRESS, (uint8_t)5) != 5) return false;
+    if (Wire.endTransmission() != 0) {
+        Serial.println("error in transmission of pressure");
+        return false;
+    }
+    delay(15);
+    if (Wire.requestFrom(PRESSURE_ADDRESS, (uint8_t)5) != 5) {
+        Serial.println("error in request of pressure");
+        return false;
+    }
     
+    // uint8_t status = Wire.read();
+    // uint8_t pMSB = Wire.read();
+    // uint8_t pLSB = Wire.read();
+    // uint8_t tMSB = Wire.read();
+    // uint8_t tLSB = Wire.read();
+
+    // Serial.printf("Status: %02X\n", status);
+    // Serial.printf("P: %02X %02X\n", pMSB, pLSB);
+    // Serial.printf("T: %02X %02X\n", tMSB, tLSB);
+
     uint8_t status = Wire.read();
     uint16_t pressureRaw = (Wire.read() << 8) | Wire.read();
     uint16_t temperatureRaw = (Wire.read() << 8) | Wire.read();
     pressureData.pressureRaw = pressureRaw;
     pressureData.temperatureRaw = temperatureRaw;
-
-    if (status != 0) {
-        Serial.println("Pressure conversion failed.");
-        return false;
-    }
 
     // Convert raw pressure, temperature into correct units and values. Taken directly from docs
     // Keller pressure conversion: 16384 -> Pmin; 49152 -> Pmax
@@ -189,7 +244,6 @@ bool readPressure(PressureData &pressureData) {
 
 // Prints current sensor readings to the Serial Monitor.
 void printPressureData(PressureData &pressureData) {
-    Serial.println();
     Serial.println("Current Reading");
     Serial.print("Pressure (raw): ");
     Serial.println(pressureData.pressureRaw, 3);
@@ -201,4 +255,5 @@ void printPressureData(PressureData &pressureData) {
     Serial.println(pressureData.temperatureC, 2);
     Serial.print("Depth (m): ");
     Serial.println(pressureData.depthM, 3);
+    Serial.println();
 }

@@ -11,6 +11,7 @@
 #include "timer.h"
 
 PressureData pressureData;
+int iteration = 0;
 
 bool initSys() {
     // if (!initSDCard()) {
@@ -21,6 +22,7 @@ bool initSys() {
         Serial.println("Pressure sensor initialization failed.");
         return false;
     }
+    return true;
 }
 
 void setup() {
@@ -28,12 +30,16 @@ void setup() {
     delay(DEFAULT_DELAY);
     printWakeupReason(); 
     if (!initSys()) {
-        Serial.println("Init unsucessful.");
-        return;
+        Serial.println("Init unsuccessful.");
+        Serial.println();
+        while (true) {
+            delay(DEFAULT_DELAY);
+        }
     }
     
     if (!readPressure(pressureData)) {
         Serial.println("Sensor read failed.");
+        Serial.println();
         while (true) {
             delay(DEFAULT_DELAY);
         }
@@ -52,11 +58,21 @@ void setup() {
 }
 
 void loop() {
-    if (!readPressure(pressureData)) {
-        Serial.println("Sensor read failed.");
-        while (true) {
-            delay(DEFAULT_DELAY);
+    if (iteration <= 100) {
+        if (!readPressure(pressureData)) {
+            Serial.println("Sensor read failed.");
+            while (true) {
+                delay(DEFAULT_DELAY);
+            }
+        }
+        printPressureData(pressureData);
+    } else {
+        if (iteration == 101) {
+            Serial.println("sensor done reading");
+            for (int i = 0; i < 5; i++) {
+                Serial.println();
+            }
         }
     }
-    printPressureData(pressureData);
+    iteration++;
 }

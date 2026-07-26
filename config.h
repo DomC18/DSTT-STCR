@@ -27,9 +27,12 @@
 // Pressure Sensor
 //==================================================
 
+#define PRESSURE_POWER          0
 #define PRESSURE_ADDRESS        0x40
-#define I2C_SDA                 7
-#define I2C_SCL                 3
+#define PRESSURE_REQUEST        0xAC
+#define PRESSURE_EOC            D3
+#define I2C_SDA                 D4
+#define I2C_SCL                 D5
 
 //==================================================
 // State Manager

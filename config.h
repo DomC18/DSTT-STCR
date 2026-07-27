@@ -5,8 +5,8 @@
 // System
 //==================================================
 
-#define DEFAULT_DELAY           1000
 #define BAUD_RATE               19200
+#define DEFAULT_DELAY           1000
 
 //==================================================
 // SD Card

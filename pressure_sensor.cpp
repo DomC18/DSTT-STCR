@@ -3,8 +3,8 @@
 #include "pressure_sensor.h"
 #include "config.h"
 
-float PRESSURE_MIN = 0.0f;
-float PRESSURE_MAX = 10.0f;
+float PRESSURE_MIN;
+float PRESSURE_MAX;
 
 /*
     * Reads one 16-bit memory cell from the Keller sensor's MTP memory.
@@ -46,11 +46,6 @@ bool readMemoryWord(uint8_t address, uint16_t &value) {
     bool busy = status & 0x80;
     uint8_t mode = (status >> 5) & 0x03;
     bool memError = status & 0x08;
-
-    // Serial.printf("STATUS = 0x%02X\n", status);
-    // Serial.printf("Busy = %d\n", busy);
-    // Serial.printf("Mode = %d\n", mode);
-    // Serial.printf("Memory Error = %d\n", memError);
 
     if (busy) {
         Serial.println("Sensor busy");
@@ -156,16 +151,6 @@ bool initPressureSensor() {
     return true; 
 }
 
-// void pressureOn() {
-//     digitalWrite(PRESSURE_POWER, HIGH);
-//     delay(50);
-// }
-
-// void pressureOff() {
-//     digitalWrite(PRESSURE_POWER, LOW);
-//     delay(50);
-// }
-
 /*
     * Converts pressure into water depth.
     *
@@ -217,16 +202,6 @@ bool readPressure(PressureData &pressureData) {
         return false;
     }
     
-    // uint8_t status = Wire.read();
-    // uint8_t pMSB = Wire.read();
-    // uint8_t pLSB = Wire.read();
-    // uint8_t tMSB = Wire.read();
-    // uint8_t tLSB = Wire.read();
-
-    // Serial.printf("Status: %02X\n", status);
-    // Serial.printf("P: %02X %02X\n", pMSB, pLSB);
-    // Serial.printf("T: %02X %02X\n", tMSB, tLSB);
-
     uint8_t status = Wire.read();
     uint16_t pressureRaw = (Wire.read() << 8) | Wire.read();
     uint16_t temperatureRaw = (Wire.read() << 8) | Wire.read();

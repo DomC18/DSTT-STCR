@@ -3,8 +3,7 @@
 
 #include <cstdint>
 
-void enterDeepSleep();
-void setWakeTimer(bool isSurfaced);
+void setWakeTimer(int interval);
 void printWakeupReason();
 
 #endif

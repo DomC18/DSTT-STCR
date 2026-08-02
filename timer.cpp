@@ -3,19 +3,15 @@
 #include "timer.h"
 #include "config.h"
 
-void setWakeTimer(bool isSurfaced) {
-    uint64_t wakeTimeUS = isSurfaced ? SURFACED_INTERVAL_SEC * UNIX_TIME : SUBMERGED_INTERVAL_SEC * UNIX_TIME;
-    esp_sleep_enable_timer_wakeup(wakeTimeUS);
+void setWakeTimer(int interval) {
+    uint64_t wakeTime = interval * UNIX_TIME;
+    esp_sleep_enable_timer_wakeup(wakeTime);
     Serial.print("Wake timer set for ");
-    Serial.print(wakeTimeUS);
+    Serial.print(wakeTime);
     Serial.println(" seconds.");
 }
 
 void printWakeupReason() {
-    Serial.println("======================");
-    Serial.println("Sea Turtle Data Logger");
-    Serial.println("======================");
-
     esp_sleep_wakeup_cause_t reason = esp_sleep_get_wakeup_cause();
     switch (reason) {
         case ESP_SLEEP_WAKEUP_TIMER:
@@ -39,6 +35,4 @@ void printWakeupReason() {
             Serial.println(reason);
             break;
     }
-
-    Serial.println();
 }

@@ -8,8 +8,6 @@ enum TagState {
     SURFACED
 };
 
-bool isSurfaced();
-TagState getCurrentState();
-void updateState(const PressureData& pressureData);
+void updateState(TagState currentState, const PressureData& pressureData, uint32_t &dryCount, uint32_t &surfacedSamples);
 
 #endif

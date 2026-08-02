@@ -3,19 +3,29 @@
 #include <SD.h>
 #include <SPI.h>
 #include <esp_sleep.h>
+#include "battery_manager.h"
 #include "config.h"
 #include "pressure_sensor.h"
 #include "sd_logger.h"
 #include "state_manager.h"
-#include "temperature_sensor.h"
 #include "timer.h"
 
+const char* fileName = "/log16.csv";
 PressureData pressureData;
+TagState currentState;
+uint32_t dryCount = 0;
+uint32_t surfacedSamples = 0;
+RTC_DATA_ATTR uint32_t sampleNumber = 0;
+RTC_DATA_ATTR uint32_t elapsedTimeSeconds = 0;
 int iteration = 0;
 
 bool initSys() {
     if (!initPressureSensor()) {
         Serial.println("Pressure sensor initialization failed.");
+        return false;
+    }
+    if (!initSDCard()) {
+        Serial.println("SD card initialization failed.");
         return false;
     }
     return true;
@@ -25,6 +35,12 @@ void setup() {
     Serial.begin(BAUD_RATE);
     delay(DEFAULT_DELAY);
     printWakeupReason(); 
+
+    readMillivolts(D2, false);
+    pinMode(D0, OUTPUT);
+    digitalWrite(D0, LOW);
+    delay(5000);
+
     if (!initSys()) {
         Serial.println("Init unsuccessful.");
         Serial.println();
@@ -32,75 +48,33 @@ void setup() {
             delay(DEFAULT_DELAY);
         }
     }
-    
-    if (!readPressure(pressureData)) {
-        Serial.println("Sensor read failed.");
-        Serial.println();
-        while (true) {
-            delay(DEFAULT_DELAY);
-        }
-    }
-    printPressureData(pressureData);
 }
 
 void loop() {
-    if (iteration <= 100) {
-        if (!readPressure(pressureData)) {
-            Serial.println("Sensor read failed.");
-            while (true) {
-                delay(DEFAULT_DELAY);
-            }
-        }
-        printPressureData(pressureData);
-    } else {
-        if (iteration == 101) {
-            Serial.println("sensor done reading");
-            for (int i = 0; i < 5; i++) {
+    if (iteration <= 50) {
+        Serial.print("Iteration: ");
+        Serial.println(iteration);
+        // if (readMillivolts(D2, false) > 650) {
+            // Serial.println("Underwater");
+            if (!readPressureSensor(pressureData)) {
+                Serial.println("pressure read failed");
                 Serial.println();
+            } else {
+                updateState(currentState, pressureData, dryCount, surfacedSamples);
+                printPressureData(pressureData);
+                logData(pressureData, fileName);
+                Serial.println();
+                // elapsedTimeSeconds += 30;
+                // setWakeTimer(30);
+                // esp_deep_sleep_start();
             }
-        }
+        // } else {
+        //   Serial.println("Above water");
+        // }
+    } else if (iteration == 51) {
+        Serial.println("pressure data completion");
+        readData(fileName);
     }
     iteration++;
+    delay(2000);
 }
-
-
-
-
-// #include <Wire.h>
-// #include "config.h"
-
-// void setup() {
-//     Serial.begin(BAUD_RATE);
-//     delay(DEFAULT_DELAY);
-
-//     Wire.begin(I2C_SDA, I2C_SCL);
-//     Wire.setClock(50000);
-
-//     Serial.println("Scanning...");
-//     for (uint8_t addr = 1; addr < 127; addr++) {
-//         Wire.beginTransmission(addr);
-//         uint8_t end = Wire.endTransmission();
-//         Serial.printf("0x%02X -> %d\n", addr, end);
-//     }
-//     Serial.println("done");
-// }
-
-// void loop() {}
-
-
-// #include <Arduino.h>
-// #include <Wire.h>
-// #include "config.h"
-
-// void setup() {
-//     Serial.begin(19200);
-//     delay(1000);
-
-//     pinMode(I2C_SDA, INPUT_PULLUP);
-//     pinMode(I2C_SCL, INPUT_PULLUP);
-
-//     Serial.printf("SDA = %d\n", digitalRead(I2C_SDA));
-//     Serial.printf("SCL = %d\n", digitalRead(I2C_SCL));
-// }
-
-// void loop() {}

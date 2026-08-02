@@ -4,28 +4,23 @@
 #include "sd_logger.h"
 #include "config.h"
 
-static uint32_t sampleNumber = 0;
-
 bool initSDCard() {
-    bool result = SPI.begin(SPI_SCK, SPI_MISO, SPI_MOSI);
-    Serial.println(result);
-    if (!SD.begin(SD_CS, SPI)) {
+    SPI.begin(SPI_SCK, SPI_MISO, SPI_MOSI, SD_CS); // Initialize SPI with SCK, MISO, MOSI, and CS pins
+    if (!SD.begin(SD_CS)) {
         return false;
     }
 
     return true;
 }
 
-bool logData(const PressureData &pressureData) {
-    const char *filename = "/log.csv";
-
+bool logData(const PressureData &pressureData, const char* filename, uint32_t &sampleNumber, uint32_t &elapsedTimeSeconds) {
     if (!SD.exists(filename)) {
         File file = SD.open(filename, FILE_WRITE);
         if (!file) {
-            Serial.println("Failed to create log file.");
-            return false;
+        Serial.println("Failed to create log file.");
+        return false;
         }
-        file.println("Sample,Elapsed_Time_s,Pressure_bar,Temperature_C,Depth_m,Submerged");
+        file.println("Sample,Elapsed_Time_s,Pressure_bar,Temperature_C,Depth_m");
         file.close();
     }
     File file = SD.open(filename, FILE_APPEND);
@@ -35,10 +30,9 @@ bool logData(const PressureData &pressureData) {
     }
 
     sampleNumber++;
-    uint32_t elapsedTime = (sampleNumber - 1) * LOG_INTERVAL_SECONDS;
     file.print(sampleNumber);
     file.print(",");
-    file.print(elapsedTime);
+    file.print(elapsedTimeSeconds);
     file.print(",");
     file.print(pressureData.pressureBar, 3);
     file.print(",");
@@ -46,9 +40,29 @@ bool logData(const PressureData &pressureData) {
     file.print(",");
     file.print(pressureData.depthM, 3);
     file.print(",");
-    file.println(pressureData.submerged ? "Yes" : "No");
+
+    file.println();
     file.close();
     Serial.println("Data logged.");
+
+    return true;
+}
+
+bool readData(const char* filename) {
+    File file = SD.open(filename);
+    if (file) {
+        Serial.print(filename); 
+        Serial.println(": ");
+        while (file.available()) {
+        char c = file.read();
+        Serial.write(c);
+        }
+        file.close();
+    } else {
+        Serial.print("error opening "); 
+        Serial.println(filename);
+        return false;
+    }
 
     return true;
 }

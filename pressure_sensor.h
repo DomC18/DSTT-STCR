@@ -16,10 +16,8 @@ bool readMemoryWord(uint8_t address, uint16_t &value);
 bool readMemoryFloat(uint8_t addressMSB, float &value);
 bool readCalibration();
 bool initPressureSensor();
-void pressureOn();
-void pressureOff();
 float calculateDepth(PressureData &pressureData);
-bool readPressure(PressureData &pressureData);
+bool readPressureSensor(PressureData &pressureData);
 void printPressureData(PressureData &pressureData);
 
 #endif

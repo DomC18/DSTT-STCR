@@ -122,11 +122,11 @@ bool readMemoryFloat(uint8_t addressMSB, float &value) {
     * raw pressure counts into real pressure.
 */
 bool readCalibration() {
-    // 0x13-0x14: Pmin
-    // 0x15-0x16: Pmax
-    if (!readMemoryFloat(0x13, PRESSURE_MIN)) return false;
-    if (!readMemoryFloat(0x15, PRESSURE_MAX)) return false;
+    if (!readMemoryFloat(PMIN_START, PRESSURE_MIN)) return false;
+    if (!readMemoryFloat(PMAX_START, PRESSURE_MAX)) return false;
+    Serial.print("Pressure Minimum: ");
     Serial.println(PRESSURE_MIN);
+    Serial.print("Pressure Maximum: ");
     Serial.println(PRESSURE_MAX);
     Serial.println();
     
@@ -180,7 +180,7 @@ float calculateDepth(PressureData &pressureData) {
     *   temperatureC
     *   depthM
 */
-bool readPressure(PressureData &pressureData) {
+bool readPressureSensor(PressureData &pressureData) {
     Wire.beginTransmission(PRESSURE_ADDRESS);
     Wire.write(PRESSURE_REQUEST);
     
@@ -219,16 +219,21 @@ bool readPressure(PressureData &pressureData) {
 
 // Prints current sensor readings to the Serial Monitor.
 void printPressureData(PressureData &pressureData) {
-    Serial.println("Current Reading");
     Serial.print("Pressure (raw): ");
     Serial.println(pressureData.pressureRaw, 3);
     Serial.print("Pressure (bar): ");
     Serial.println(pressureData.pressureBar, 3);
-    Serial.print("Pressure (raw): ");
+    Serial.print("Temperature (raw): ");
     Serial.println(pressureData.temperatureRaw, 3);
     Serial.print("Temperature (C): ");
     Serial.println(pressureData.temperatureC, 2);
     Serial.print("Depth (m): ");
     Serial.println(pressureData.depthM, 3);
-    Serial.println();
+    
+    Serial.print("State: ");
+    if (currentstate == SUBMERGED) {
+        Serial.println("submerged");
+    } else {
+        Serial.println("surfaced");
+    }
 }
